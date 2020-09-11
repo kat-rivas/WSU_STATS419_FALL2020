@@ -1,0 +1,38 @@
+---
+title: "Week 03 Assignment"
+author: "Kathleen Rivas"
+email: "kathleen.rivas@wsu.edu"
+course: "STATS 419 Survey of Multivariate Analysis"
+course-short: "STATS 419"
+instructor: "Monte J. Shaffer"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+    pdf_document:
+       citation_package: natbib
+       latex_engine: pdflatex
+       template:
+          #or maybe ./../latex-templates/homework.tex
+          C:\Users\Dorbs of Doom\_git_\WSU_STATS419_FALL2020\latex=templates\homework.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r, mychunk-1, echo=FALSE}
+library(devtools)    #devtools is required for function source_url() to work....
+github.path = "https://raw.githubusercontent.com/kat-rivas/WSU_STATS419_FALL2020/"
+source_url(paste0(github.path, "master/functions/libraries.R"))
+source_url(paste0(github.path, "master/functions/functions-imdb.R"))
+```
+
+SHA-1 HASH OF FILE IS 
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
