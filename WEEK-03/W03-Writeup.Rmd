@@ -109,6 +109,8 @@ tail(personality_clean)
 Using personality_clean.txt to illustrate the functions
 
 ```{r summary stats}
+library(readr)
+library(dplyr)
 
 #read personality_clean.txt and extract first row of data for summary statistics
 personality_clean<-read_delim("personality_clean.txt",delim='|')

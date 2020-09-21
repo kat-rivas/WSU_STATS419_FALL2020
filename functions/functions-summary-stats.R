@@ -30,14 +30,14 @@ doSampleVariance = function(x, method)
     n<-0
     sum1<-0
     sum2<-0
-    for (val in v) {
+    for (val in x) {
       n<- n+1
       sum1<-sum1+val
     }
     
     mean<-sum1/n
     
-    for (val in v) {
+    for (val in x) {
       sum2<-sum2+((val-mean)^2)
     }
     var<-sum2 / (n-1)
