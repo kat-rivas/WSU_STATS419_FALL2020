@@ -120,3 +120,13 @@ monte2<- as.double(subset(monte, select=-c(md5_email, Year, Week)))
 doSummary(monte2)
 
 ```
+
+##Create z-scores and plot 
+The pattern is a straight, diagonal line. It means that the z-scores are linearly transformed scores from the raw scores. The raw scores are within two standard deviations, and the points are roughly equidistant from each other.
+
+```{r z score}
+
+y<-doZScore(monte2)
+plot(x,y)
+```
+

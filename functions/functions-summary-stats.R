@@ -91,9 +91,6 @@ doMode = function(x)
 # @param x vector
 # @return statistics on the vector
 #
-# note: assumes the vector is specific to 
-# personality dataset, so removes certain
-# columns 
 doSummary = function(x)
 {
   # length
@@ -118,4 +115,19 @@ doSummary = function(x)
              "var"=var, "built-in sd"=r_sd, "custom sd"=custom_sd)
   
   summary
+}
+
+
+# doZScore
+#
+# z-score for a given vector
+# @param x vector
+# @return z-scores on the vector
+#
+doZScore=function(x)
+{
+  mean<-mean(x)
+  sd<-sd(x)
+  z<-(x-mean)/sd
+  z
 }
