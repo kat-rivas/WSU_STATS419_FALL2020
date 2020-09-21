@@ -99,7 +99,7 @@ doSummary = function(x)
   # length
   length = length(x); length
   # number of NAs
-  numNAs =sum(is.na(x$row)); numNAs
+  numNAs =sum(is.na(x)); numNAs
   # mean
   mean = mean(x)
   # median
