@@ -96,7 +96,6 @@ doMode = function(x)
 # columns 
 doSummary = function(x)
 {
-  v<- as.double(subset(x, select=-c(md5_email, Year, Week)))
   # length
   length = length(v); length
   # number of NAs

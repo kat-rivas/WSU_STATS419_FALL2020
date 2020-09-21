@@ -18,16 +18,103 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r, mychunk-1, echo=FALSE}
 library(devtools)    #devtools is required for function source_url() to work....
 github.path = "https://raw.githubusercontent.com/kat-rivas/WSU_STATS419_FALL2020/"
 source_url(paste0(github.path, "master/functions/libraries.R"))
-#source_url(paste0(github.path, "master/functions/functions-dataframe.R"))
+source_url(paste0(github.path, "master/functions/functions-imdb.R"))
+source_url(paste0(github.path, "master/functions/functions-matrix.R"))
+source_url(paste0(github.path, "master/functions/functions-summary-stats.R"))
 ```
 
+## Rotation Functions Using a 3x3 Matrix
+
+```{r}
+myMatrix = matrix(c(1,0,2,
+                    0,3,0,
+                    4,0,5), nrow=3, byrow=T)
+
+rotateMatrix90(myMatrix)
+
+rotateMatrix180(myMatrix)
+
+rotateMatrix270(myMatrix)
+  
+```
+
+##Iris Scatterplot Matrix 
+#Recreate the Wikipedia scatterplot matrix exactly.
+
+```{r iris}
+#color designations for species
+my_cols <- c("red", "lime green", "blue") 
+
+pairs(~Sepal.Length+Sepal.Width+Petal.Length+Petal.Width, data=iris, main="Iris Data (red=setosa,green=versicolor,blue=virginica", pch=21, bg=my_cols[iris$Species], col="black", cex=1.4, cex.labels=2, cex.main=1.75, cex.axis=1.75 )
+```
+
+##Iris Data Set description
+
+This data set was published in 1936, and is so popular for computer statistical programming, that it is built into R. It consists of 50 samples of 3 different types of irises, with four measurements: sepal length, sepal width, petal length, and petal width, for a total of 150 observations. 
+
+The three iris species are Iris setosa, versicolor, and virginica. Setosa grows in the largest geographic region: a large area from Japan to coastal Alaska, Canada, and dips into the Great Lakes region of the United States. Iris versicolor grows from mainly in the north east coast from northern Virginia to Canada, and from Winnipeg, Canada. It's habitat is considerably smaller than Iris Setosa. Iris virginica grows from Virginia southward along the coast to the border of Florida. Another way to describe the region is that virginica grows in Ozark-Appalachian landmass. 
+
+The model which was used to create the ideograms for each flower is essentially a sepal superimposed on a petal. The ideogram is a black rectangle with a white rectangle inside it. The rectangles are drawn from the height and width of the sepal and petal. The ideogram, in a single image, shows the four measurements (sepal length & width, petal length& width), along with the relation the sepal and petal size have to each other (how large the petal is vs how small the sepal is, some iris have a greater disparity in size between the two, others have a smaller disparity).
+
+##Import personality-raw.txt into R
+Number of records in personality-raw.txt: 838
+Number of records in personality_clean.txt: 678
+
+```{r clean up personality-raw}
+library(readr)
+library(dplyr)
+
+#read txt file, remove V00 
+personality_dat<-read_delim("personality-raw.txt", delim='|')
+remove_V00_dat<-subset(personality_dat, select = -c(V00))
+
+#remove date_test column to turn into year and week columns
+date_col<-remove_V00_dat[[2]]
+
+just_date<-gsub(" .*", "", date_col)
+formatted_date<-as.Date(just_date, format="%m/%d/%Y")
+
+year_col<-format(formatted_date, format="%Y")
+week_col<-format(formatted_date, format="%V")
+
+#remove date_test column from remove_V00_dat and create a frame
+remove_date_col<-subset(remove_V00_dat, select=-c(date_test))
+asframe<-as.data.frame(remove_date_col, stringsAsFactors=FALSE)
+
+#add year and week columns to remove_dat_col
+added_year<-cbind(asframe, Year=year_col)
+added_week<-cbind(added_year, Week=week_col)
+reorder<- added_week[, colnames(added_week)[c(1, 62, 63, 2:61 )]]
+
+#descending order by date
+descending<-reorder[order(-xtfrm(reorder[,2]), -xtfrm(reorder[,3])), ]
+
+#filter for duplicates and finalize cleaned data
+personality_clean<- descending %>% distinct(md5_email, .keep_all=TRUE)
+
+#export to txt file
+write.table(personality_clean, file="personality_clean.txt", 
+            sep="|", dec=".", row.names=FALSE, col.names=TRUE)
+
+head(personality_clean)
+tail(personality_clean)
+```
+
+##Custom functions for doSummary, sampleVariance, and doMode
+Using personality_clean.txt to illustrate the functions
+
+```{r summary stats}
+
+#read personality_clean.txt and extract first row of data for summary statistics
+personality_clean<-read_delim("personality_clean.txt",delim='|')
+monte<-personality_clean %>% slice(1:1)
+monte2<- as.double(subset(monte, select=-c(md5_email, Year, Week)))
+
+doSummary(monte2)
+
+```
