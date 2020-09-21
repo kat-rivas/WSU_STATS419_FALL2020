@@ -97,19 +97,19 @@ doMode = function(x)
 doSummary = function(x)
 {
   # length
-  length = length(v); length
+  length = length(x); length
   # number of NAs
   numNAs =sum(is.na(x$row)); numNAs
   # mean
-  mean = mean(v)
+  mean = mean(x)
   # median
-  median=median(v)
+  median=median(x)
   # mode 
-  mode=doMode(v)
+  mode=doMode(x)
   # variance 
-  var = doSampleVariance(v, "naive")
+  var = doSampleVariance(x, "naive")
   # sd ... built in function but compare it to the custom function ... 
-  r_sd<-sd(v)
+  r_sd<-sd(x)
   custom_sd<-sqrt(var[3])
   
   #summary
