@@ -26,9 +26,10 @@ source_url(paste0(github.path, "master/functions/libraries.R"))
 source_url(paste0(github.path, "master/functions/functions-imdb.R"))
 source_url(paste0(github.path, "master/functions/functions-matrix.R"))
 source_url(paste0(github.path, "master/functions/functions-summary-stats.R"))
+source_url(paste0(github.path, "master/functions/functions-2020dollars.R"))
 ```
 
-## Rotation Functions Using a 3x3 Matrix
+# Rotation Functions Using a 3x3 Matrix
 
 ```{r}
 myMatrix = matrix(c(1,0,2,
@@ -43,17 +44,17 @@ rotateMatrix270(myMatrix)
   
 ```
 
-##Iris Scatterplot Matrix 
-#Recreate the Wikipedia scatterplot matrix exactly.
+# Iris Scatterplot Matrix 
+## Recreate the Wikipedia scatterplot matrix exactly.
 
 ```{r iris}
 #color designations for species
 my_cols <- c("red", "lime green", "blue") 
 
-pairs(~Sepal.Length+Sepal.Width+Petal.Length+Petal.Width, data=iris, main="Iris Data (red=setosa,green=versicolor,blue=virginica", pch=21, bg=my_cols[iris$Species], col="black", cex=1.4, cex.labels=2, cex.main=1.75, cex.axis=1.75 )
+pairs(~Sepal.Length+Sepal.Width+Petal.Length+Petal.Width, data=iris, main="Iris Data (red=setosa,green=versicolor,blue=virginica", pch=21, bg=my_cols[iris$Species], col="black", cex=1.4, cex.labels=1.5, cex.main=1.4, cex.axis=1.75 )
 ```
 
-##Iris Data Set description
+# Iris Data Set description
 
 This data set was published in 1936, and is so popular for computer statistical programming, that it is built into R. It consists of 50 samples of 3 different types of irises, with four measurements: sepal length, sepal width, petal length, and petal width, for a total of 150 observations. 
 
@@ -61,7 +62,7 @@ The three iris species are Iris setosa, versicolor, and virginica. Setosa grows 
 
 The model which was used to create the ideograms for each flower is essentially a sepal superimposed on a petal. The ideogram is a black rectangle with a white rectangle inside it. The rectangles are drawn from the height and width of the sepal and petal. The ideogram, in a single image, shows the four measurements (sepal length & width, petal length& width), along with the relation the sepal and petal size have to each other (how large the petal is vs how small the sepal is, some iris have a greater disparity in size between the two, others have a smaller disparity).
 
-##Import personality-raw.txt into R
+# Import personality-raw.txt into R
 Number of records in personality-raw.txt: 838
 Number of records in personality_clean.txt: 678
 
@@ -100,12 +101,9 @@ personality_clean<- descending %>% distinct(md5_email, .keep_all=TRUE)
 #export to txt file
 write.table(personality_clean, file="personality_clean.txt", 
             sep="|", dec=".", row.names=FALSE, col.names=TRUE)
-
-head(personality_clean)
-tail(personality_clean)
 ```
 
-##Custom functions for doSummary, sampleVariance, and doMode
+# Custom functions for doSummary, sampleVariance, and doMode
 Using personality_clean.txt to illustrate the functions
 
 ```{r summary stats}
@@ -121,12 +119,101 @@ doSummary(monte2)
 
 ```
 
-##Create z-scores and plot 
-The pattern is a straight, diagonal line. It means that the z-scores are linearly transformed scores from the raw scores. The raw scores are within two standard deviations, and the points are roughly equidistant from each other.
+# Create z-scores and plot 
+The pattern is a straight, diagonal line. Simply, the z-scores are linearly transformed scores from the raw scores. The raw scores are within two standard deviations, and the points are roughly equidistant from each other.
 
 ```{r z score}
 
 y<-doZScore(monte2)
-plot(x,y)
+plot(monte2,y)
 ```
 
+# Compare Will Smith and Denzel Washington
+I converted raw value into 2020 value. For example, in 1995, $7.92 million is the equivalent to $13.465 million dollars today in 2020. This was, by far, the most difficult for me because I had trouble understanding how the inflation rate worked. (I did have my husband help me with the math, and it took him some time as well. I am not sure why it was so difficult, perhaps we just weren't seeing what was, in essence, simple). 
+
+```{r will vs denzel}
+library(readr)
+library(dplyr)
+
+inflation<-read_delim("inflation.txt",delim='|')
+#reverse columns
+inflation<-inflation[rev(1:nrow(inflation)), ]
+
+#get deflation rate 
+adjusted<-getDeflationRate(inflation)
+adjusted<-as.vector(unlist(adjusted))
+adjusted<-data.frame(adjusted) #converted to dataframe 
+inflation<-cbind(inflation, adjusted) #added adjusted rate to inflation dataframe
+
+#prepped the inflation data set shift adjust down by 1 
+inflation<-inflation %>% mutate_at(c("adjusted"), list(lag),n=1) 
+inflation<-inflation %>% replace(is.na(.),1) 
+inflation<-inflation[rev(1:nrow(inflation)), ] #reverse order back to ascending
+
+#prep will and denzel data 
+#will data frame for raw year and gross 
+nmid = "nm0000226";
+will = grabFilmsForPerson(nmid)
+will.gross<-will$movies.50$millions 
+will.year<-will$movies.50$year 
+will.raw<-data.frame(will.year, will.gross) 
+colnames(will.raw) = c("year", "dollar")
+clean.will.raw<-na.omit(will.raw)
+
+#denzel data frame for raw year and gross 
+nmid = "nm0000243";
+denzel = grabFilmsForPerson(nmid);
+denzel.gross<-denzel$movies.50$millions 
+denzel.year<-denzel$movies.50$year
+denzel.raw<-data.frame(denzel.year, denzel.gross) 
+colnames(denzel.raw) = c("year", "dollar")
+clean.denzel.raw<-na.omit(denzel.raw)
+
+#get will and denzel movie year matched to index position of inflation year
+m<-as.numeric(match(clean.will.raw$year, inflation$year)) #matches the will year to inflation
+d<-as.numeric(match(clean.denzel.raw$year, inflation$year)) #matches denzel year to inflation table
+
+#get inflation rate equivalent by year of movies 
+final.rate.will<-sapply(m, FUN=getRate2020) #m (will) 
+final.rate.denzel<-sapply(d, FUN=getRate2020) #d (denzel)
+
+#add final.rate to will.raw.clean 
+will.2<-cbind(clean.will.raw,final.rate.will) 
+#change will dollar amount with final rate 
+will.2$dollar_adjusted=will.2$dollar*will.2$final.rate
+
+#final rate to denzel.raw.clean 
+denzel.2<-cbind(clean.denzel.raw, final.rate.denzel) 
+denzel.2$dollar_adjusted=denzel.2$dollar*denzel.2$final.rate
+```
+
+# Will Smith vs Denzel Washington Side by Side Box Plots
+
+Boxplot highlights: The interquartile range is the 25th to 75th percentile of data points, and then the whiskers are Q1 and Q4. Dots are the outliers. The line represents the median.
+
+```{r adjusted inflation}
+par(mfrow=c(1,2));
+boxplot(will.2$dollar_adjusted, main=will$name, ylim=c(0,500), ylab="Adjusted Millions to 2020")
+boxplot(denzel.2$dollar_adjusted, main=denzel$name, ylim=c(0,360), ylab="Adjusted Millions to 2020")
+```
+
+The boxplot above is the adjusted to 2020 dollar value. The raw boxplot implies that Will Smith movies made considerably more than Denzel, and this is true even for the adjusted value. However, adjusting for value, Denzel movies do make more than the raw value implies. Will Smith movie gross sales has a far wider range than Denzels. His median is also higher than Will's. Will Smith has one outlier at $500mil. This
+
+```{r ratings}
+par(mfrow=c(1,2));
+boxplot(will$movies.50$ratings, main=will$name, ylim=c(1,10), ylab="Ratings 1-10")
+boxplot(denzel$movies.50$ratings, main=denzel$name, ylim=c(1,10), ylab="Ratings 1-10")
+```
+
+This side by side boxplot represents the ratings of the movies. Again, Denzel movies are rated in general higher than Will Smith's, due to median and bottom whisker. Will Smith has a 2 rating outlier.
+
+```{r length of movies}
+par(mfrow=c(1,2));
+boxplot(will$movies.50$minutes, main=will$name, ylim=c(50,200), ylab="Movie Length")
+boxplot(denzel$movies.50$minutes, main=denzel$name, ylim=c(50,202), ylab="Movie Length")
+```
+
+This side by side boxplot represents the length of movies. Not surprisingly, these boxplots are similar because movie lengths have a narrower range than other factors like gross sales. Denzel's median movie is higher in length and the bottom whisker is higher than Will's. Overall, Denzel makes longer movies than Will.
+
+## Conclusion
+In general, these boxplots visually show how compact Denzel's statistics are compared to Will Smith. Will Smith has a wider diversity/range in movies -- in terms of sales, ratings, and even movie length. He has grossed movies much higher than Denzel, but he has also had some poorly grossing movies. Same with both movie length, but especially in terms of ratings.

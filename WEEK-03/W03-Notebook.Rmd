@@ -549,8 +549,7 @@ grabFilmsForPerson = function(nmid)
 
 #box plots for will smith
 nmid = "nm0000226";
-will = grabF
-ilmsForPerson(nmid);
+will = grabFilmsForPerson(nmid);
 plot(will$movies.50[,c(1,6,7:10)]);
 boxplot(will$movies.50$millions);
 widx =  which.max(will$movies.50$millions);
