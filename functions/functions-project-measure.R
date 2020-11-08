@@ -51,5 +51,5 @@ prepareMeasureData = function(x)
   subset.df = na.omit(subset)
   
   #remove my.ethnicity because it's not numeric for correlation table
-  subset.df = subset[subset.df ,select = c(my.ethnicity)]
+  subset.df = subset[subset.df ,select = -c(my.ethnicity)]
 }
