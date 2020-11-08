@@ -31,19 +31,19 @@ prepareMeasureData = function(x)
     }
   }
   
-  for (j in 1:length(myData[,5])
+  for (j in 1:length(myData$my.gender))
   {
-    if (myData[i,5] == "f")
+    if (myData[j,5] == "f")
     {
-      myData[i,5] == "1"
+      myData[j,5] = "1"
     }
-    if (myData[i,5] == "m")
+    if (myData[j,5] == "m")
     {
-      myData[i,5] == "2"
+      myData[j,5] = "2"
     }
-    if (myData[i,5] == "o")
+    if (myData[j,5] == "o")
     {
-      myData[i,5] == "3"
+      myData[j,5] = "3"
     }
   }
   
