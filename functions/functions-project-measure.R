@@ -31,7 +31,7 @@ prepareMeasureData = function(x)
     }
   }
   
-  for (j in 1:lentgh(subset.df$my.gender))
+  for (j in 1:length(subset.df$my.gender))
   {
     if (subset.df[i,5] == "f")
     {
