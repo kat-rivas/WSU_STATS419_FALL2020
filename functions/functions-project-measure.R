@@ -9,12 +9,12 @@ prepareMeasureData = function(x)
   {
     if (subset.df[i, 3] == "w")
     {
-      subse.dft[i, 7] = "1"  #1 for white
+      subset.df[i, 7] = "1"  #1 for white
     }
     if (subset.df[i, 3] == "a" | subset.df[i, 3] == "j" | subset.df[i, 3] == "lao" |
         subset.df[i, 3] == "k" | subset.df[i, 3] == "c" | subset.df[i, 3] == "f" )
     {
-      subset[i, 7] = "a"  #2 for asian,but not indian
+      subset.df[i, 7] = "a"  #2 for asian,but not indian
     }
     if (subset.df[i, 3] == "al" | subset.df[i, 3] == "ca" | subset.df[i, 3] == "i" | subset.df[i, 3] == "ji" | 
         subset.df[i, 3] == "nat" | subset.df[i, 3] == "pi")
@@ -31,19 +31,19 @@ prepareMeasureData = function(x)
     }
   }
   
-  for (j in 1:lenght(subset$my.gender))
+  for (j in 1:lenght(subset.df$my.gender))
   {
-    if (subset[i,5] == "f")
+    if (subset.df[i,5] == "f")
     {
-      subset[i,5] == "1"
+      subset.df[i,5] == "1"
     }
-    if (subset[i,5] == "m")
+    if (subset.df[i,5] == "m")
     {
-      subset[i,5] == "2"
+      subset.df[i,5] == "2"
     }
-    if (subset[i,5] == "o")
+    if (subset.df[i,5] == "o")
     {
-      subset[i,5] == "3"
+      subset.df[i,5] == "3"
     }
   }
   
