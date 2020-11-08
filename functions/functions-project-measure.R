@@ -29,8 +29,9 @@ prepareMeasureData = function(x)
     {
       myData[i, 7] = "3"  #3 for hispanic
     }
-    #measure.df = prepareMeasureData(measure)
-    for (j in 1:length(myData$my.gender))
+  }
+  #measure.df = prepareMeasureData(measure)
+  for (j in 1:length(myData$my.gender))
     {
       if (myData[i,5] == "f")
       {
@@ -45,7 +46,6 @@ prepareMeasureData = function(x)
         myData[i,5] == "3"
       }
     }
-  }
   
   #remove NAs
   myData = na.omit(myData)
