@@ -1,37 +1,55 @@
 
 prepareMeasureData = function(x)
 {
-  subset = select(x, head.height, height, my.ethnicity, age, my.gender)
-  subset$head.to.height = (subset$height - subset$head.height) / subset$head.height
-  subset$ethnicity.groups <- NA
+  subset.df = select(x, head.height, height, my.ethnicity, age, my.gender)
+  subset.df$head.to.height = (subset.df$height - subset.df$head.height) / subset.df$head.height
+  subset.df$ethnicity.groups <- NA
   
-  for (i in 1:length(subset$my.ethnicity))
+  for (i in 1:length(subset.df$my.ethnicity))
   {
-    if (subset[i, 3] == "w")
+    if (subset.df[i, 3] == "w")
     {
-      subset[i, 7] = "w"  #w for white
+      subse.dft[i, 7] = "1"  #1 for white
     }
-    if (subset[i, 3] == "a" | subset[i, 3] == "j" | subset[i, 3] == "lao" |
-        subset[i, 3] == "k" | subset[i, 3] == "c" | subset[i, 3] == "f" )
+    if (subset.df[i, 3] == "a" | subset.df[i, 3] == "j" | subset.df[i, 3] == "lao" |
+        subset.df[i, 3] == "k" | subset.df[i, 3] == "c" | subset.df[i, 3] == "f" )
     {
-      subset[i, 7] = "a"  #a for asian,but not indian
+      subset[i, 7] = "a"  #2 for asian,but not indian
     }
-    if (subset[i, 3] == "al" | subset[i, 3] == "ca" | subset[i, 3] == "i" | subset[i, 3] == "ji" | 
-        subset[i, 3] == "nat" | subset[i, 3] == "pi")
+    if (subset.df[i, 3] == "al" | subset.df[i, 3] == "ca" | subset.df[i, 3] == "i" | subset.df[i, 3] == "ji" | 
+        subset.df[i, 3] == "nat" | subset.df[i, 3] == "pi")
     {
-      subset[i, 7] = "o"  #o for other, i.e. mixed, indian, native american
+      subset.df[i, 7] = "5"  #5 for other, i.e. mixed, indian, native american
     }
-    if (subset[i, 3] == "b")
+    if (subset.df[i, 3] == "b")
     {
-      subset[i, 7] = "b"  #b for african american
+      subset.df[i, 7] = "4"  #4 for african american
     }
-    if (subset[i, 3] == "h" | subset[i, 3] == "l" )
+    if (subset.df[i, 3] == "h" | subset.df[i, 3] == "l" )
     {
-      subset[i, 7] = "h"  #h for hispanic
+      subset.df[i, 7] = "3"  #3 for hispanic
+    }
+  }
+  
+  for (j in 1:lenght(subset$my.gender))
+  {
+    if (subset[i,5] == "f")
+    {
+      subset[i,5] == "1"
+    }
+    if (subset[i,5] == "m")
+    {
+      subset[i,5] == "2"
+    }
+    if (subset[i,5] == "o")
+    {
+      subset[i,5] == "3"
     }
   }
   
   #remove NAs
-  subset = na.omit(subset)
+  subset.df = na.omit(subset)
   
+  #remove my.ethnicity because it's not numeric for correlation table
+  subset.df = subset[subset.df ,select = c(my.ethnicity)]
 }
