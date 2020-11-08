@@ -36,4 +36,7 @@ prepareMeasureData = function(x)
   
   #remove my.ethnicity because it's not numeric for correlation table
   myData = subset(myData, select = -my.ethnicity)
+  
+  #convert to as.numeric for correlation table
+  myData <- data.frame(lapply(myData, as.numeric), stringsAsFactors = FALSE)
 }
