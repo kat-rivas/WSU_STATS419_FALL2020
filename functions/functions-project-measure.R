@@ -1,8 +1,7 @@
-library(dplyr)
 
 prepareMeasureData = function(x)
 {
-  subset = select(measure, head.height, height, my.ethnicity, age, my.gender)
+  subset = select(x, head.height, height, my.ethnicity, age, my.gender)
   subset$head.to.height = (subset$height - subset$head.height) / subset$head.height
   subset$ethnicity.groups <- NA
   
@@ -34,4 +33,6 @@ prepareMeasureData = function(x)
   
   #remove NAs
   subset = na.omit(subset)
+  
+  return subset
 }
