@@ -34,5 +34,4 @@ prepareMeasureData = function(x)
   #remove NAs
   subset = na.omit(subset)
   
-  return subset
 }
