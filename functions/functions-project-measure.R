@@ -30,23 +30,7 @@ prepareMeasureData = function(x)
       myData[i, 7] = "3"  #3 for hispanic
     }
   }
-  
-  for (j in 1:length(myData$my.gender))
-  {
-    if (myData[j,5] == "f")
-    {
-      myData[j,5] = "1"
-    }
-    if (myData[j,5] == "m")
-    {
-      myData[j,5] = "2"
-    }
-    if (myData[j,5] == "o")
-    {
-      myData[j,5] = "3"
-    }
-  }
-  
+
   #remove NAs
   myData = na.omit(myData)
   
