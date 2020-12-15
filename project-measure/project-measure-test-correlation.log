@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.4)  8 NOV 2020 09:22
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.4)  8 NOV 2020 14:21
 entering extended mode
 **./project-measure-test-correlation.tex
 (project-measure-test-correlation.tex
@@ -935,33 +935,33 @@ LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 399.
 [1
 
-{C:/Users/Dorbs of Doom/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] (tables
-/tree-correlation-table.tex
-Underfull \hbox (badness 10000) in alignment at lines 26--26
-[][][][][][][][][][][][][][][][]
+{C:/Users/Dorbs of Doom/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] (ta
+bles/my-correlation-table.tex
+Underfull \hbox (badness 10000) in alignment at lines 28--28
+[][][][][][][][][][][][][][][][][][][]
  []
 
-) [2] [3] (tables/tree-correlation-table2.tex
+) [3] [4] (tables/tree-correlation-table2.tex
 Underfull \hbox (badness 10000) in alignment at lines 32--32
 [][][][][][][][][][][][][][][][][][][][][][][][][]
  []
 
-) [4]
+) [5]
 
 Package endnotes Warning: No endnotes found (file project-measure-test-correlat
 ion.ent does not exist)
-(endnotes)                 on input line 485.
+(endnotes)                 on input line 495.
 
-[5
+[6
 
-] (project-measure-test-correlation.bbl) [6] (project-measure-test-correlation.
+] (project-measure-test-correlation.bbl) [7] (project-measure-test-correlation.
 toc)
 \tf@toc=\write5
 \openout5 = `project-measure-test-correlation.toc'.
 
 
 AED: lastpage setting LastPage
-[7] (project-measure-test-correlation.aux)
+[8] (project-measure-test-correlation.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -970,13 +970,13 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 15335 strings out of 479799
- 235659 string characters out of 2865885
- 564718 words of memory out of 3000000
- 32029 multiletter control sequences out of 15000+200000
+ 15334 strings out of 479799
+ 235646 string characters out of 2865885
+ 564715 words of memory out of 3000000
+ 32028 multiletter control sequences out of 15000+200000
  612027 words of font info for 77 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 79i,15n,84p,796b,535s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 79i,15n,84p,796b,534s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-r
 m.enc}{C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/
 lm-mathit.enc}{C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/fonts/enc/d
@@ -1001,10 +1001,10 @@ ms/MiKTeX/fonts/type1/public/lm/lmsy6.pfb><C:/Users/Dorbs of Doom/AppData/Local
 ta/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Users/Dorbs of Do
 om/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtti10.pfb><C:/Users/Do
 rbs of Doom/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb>
-Output written on project-measure-test-correlation.pdf (7 pages, 317845 bytes).
+Output written on project-measure-test-correlation.pdf (8 pages, 322042 bytes).
 
 PDF statistics:
- 99 PDF objects out of 1000 (max. 8388607)
+ 102 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

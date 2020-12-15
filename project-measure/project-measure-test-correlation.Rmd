@@ -45,6 +45,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r,setup-test-correlation,message=FALSE}
 
 library(devtools);       # required for source_url
+library(dplyr)
 
 path.humanVerseWSU = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"
 source_url( paste0(path.humanVerseWSU,"master/misc/functions-project-measure.R") );
@@ -58,31 +59,41 @@ path.tables = paste0(path.project,"tables/");
 
 
 ```{r,test-correlation,message=FALSE}
-file.correlation = paste0(path.tables,"tree-correlation-table.tex");
+file.correlation = paste0(path.tables,"my-correlation-table.tex");
 
 
-myData = as.matrix(trees);  # numeric values only, only what will appear in table
+path.project = "C:/_git_/WSU_STATS419_FALL2020/project-measure/";
+
+path.github = "https://raw.githubusercontent.com/kat-rivas/WSU_STATS419_FALL2020/";
+source_url( paste0(path.github,"master/functions/functions-project-measure.R") );
+measure = readRDS("C:/Users/Dorbs of Doom/Documents/WSU/Fall 2020/STAT 419 Intro to Multivariate/final.measure.rds")
+
+measure.df = prepareMeasureData(measure)
+
+measure.df2 = select(measure.df, head.to.height, ethnicity.groups, age, my.gender)
+myData = as.matrix(measure.df2);  # numeric values only, only what will appear in table
 
 # https://www.overleaf.com/read/srzhrcryjpwn
 # keepaspectratio of include graphics 
 # could scale \input if still too big ...
 # https://tex.stackexchange.com/questions/13460/scalebox-knowing-how-much-it-scales#13487
 buildLatexCorrelationTable(myData, 
-  rotateTable = TRUE,
-  width.table = 0.60, # best for given data ... 0.95 when rotateTable = FALSE
+  rotateTable = FALSE,
+  width.table = 0.95, # best for given data ... 0.95 when rotateTable = FALSE
                       # 0.60 when rotateTable = TRUE
   myFile = file.correlation,
-  myNames = c("Diameter (in)", "Height (ft)", "Volume (ft$^3$)") );
+  myNames = c("Head to Height","Ethnicity", "Age", "Gender" ) );
 
 
 Sys.sleep(2); # in case Knit-PDF doesn't like that I just created the file...
+
 
 
 ```
 
 \newpage
 
-\input{tables/tree-correlation-table} 
+\input{tables/my-correlation-table} 
 
 \newpage
 

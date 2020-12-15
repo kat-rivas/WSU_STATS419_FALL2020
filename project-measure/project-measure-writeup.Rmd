@@ -209,7 +209,7 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
 
 \newpage
 
-\input{tables/example-correlation-table} 
+\input{tables/my-correlation-table} 
 
 \newpage
 
@@ -330,32 +330,14 @@ source_url( paste0(path.github,"master/functions/functions-project-measure.R") )
 measure = readRDS("C:/Users/Dorbs of Doom/Documents/WSU/Fall 2020/STAT 419 Intro to Multivariate/final.measure.rds")
 
 measure.df = prepareMeasureData(measure)
-measure.df = data.frame(measure, stringsAsFactors = FALSE)
-  
-for (j in 1:length(measure.df$my.gender))
-{
-    if (measure.df[j,30] == "f")
-    {
-      measure.df[j,30] = "1"
-    }
-    if (measure.df[j,30] == "m")
-    {
-      measure.df[j,30] = "2"
-    }
-    if (measure.df[j,30] == "o")
-    {
-      measure.df[j,5] = "3"
-    }
-}
 
-measure.df[2,30]
 ```
 
 
 Below is the code to generate the summary statistics and save them as a table that you see in Section \ref{}.
 
 ```{r,appendix-summary,message=FALSE}
-
+  
 
 ```
 

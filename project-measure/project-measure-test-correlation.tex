@@ -397,6 +397,7 @@ nonlinear growth curves; Richard's curve; simulated critical points \par
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(devtools);       }\CommentTok{# required for source_url}
+\KeywordTok{library}\NormalTok{(dplyr)}
 
 \NormalTok{path.humanVerseWSU =}\StringTok{ "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"}
 \KeywordTok{source_url}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.humanVerseWSU,}\StringTok{"master/misc/functions-project-measure.R"}\NormalTok{) );}
@@ -417,21 +418,30 @@ nonlinear growth curves; Richard's curve; simulated critical points \par
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{file.correlation =}\StringTok{ }\KeywordTok{paste0}\NormalTok{(path.tables,}\StringTok{"tree-correlation-table.tex"}\NormalTok{);}
+\NormalTok{file.correlation =}\StringTok{ }\KeywordTok{paste0}\NormalTok{(path.tables,}\StringTok{"my-correlation-table.tex"}\NormalTok{);}
 
 
-\NormalTok{myData =}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(trees);  }\CommentTok{# numeric values only, only what will appear in table}
+\NormalTok{path.project =}\StringTok{ "C:/_git_/WSU_STATS419_FALL2020/project-measure/"}\NormalTok{;}
+
+\NormalTok{path.github =}\StringTok{ "https://raw.githubusercontent.com/kat-rivas/WSU_STATS419_FALL2020/"}\NormalTok{;}
+\KeywordTok{source_url}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.github,}\StringTok{"master/functions/functions-project-measure.R"}\NormalTok{) );}
+\NormalTok{measure =}\StringTok{ }\KeywordTok{readRDS}\NormalTok{(}\StringTok{"C:/Users/Dorbs of Doom/Documents/WSU/Fall 2020/STAT 419 Intro to Multivariate/final.measure.rds"}\NormalTok{)}
+
+\NormalTok{measure.df =}\StringTok{ }\KeywordTok{prepareMeasureData}\NormalTok{(measure)}
+
+\NormalTok{measure.df2 =}\StringTok{ }\KeywordTok{select}\NormalTok{(measure.df, head.to.height, ethnicity.groups, age, my.gender)}
+\NormalTok{myData =}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(measure.df2);  }\CommentTok{# numeric values only, only what will appear in table}
 
 \CommentTok{# https://www.overleaf.com/read/srzhrcryjpwn}
 \CommentTok{# keepaspectratio of include graphics }
 \CommentTok{# could scale \textbackslash{}input if still too big ...}
 \CommentTok{# https://tex.stackexchange.com/questions/13460/scalebox-knowing-how-much-it-scales#13487}
 \KeywordTok{buildLatexCorrelationTable}\NormalTok{(myData, }
-  \DataTypeTok{rotateTable =} \OtherTok{TRUE}\NormalTok{,}
-  \DataTypeTok{width.table =} \FloatTok{0.60}\NormalTok{, }\CommentTok{# best for given data ... 0.95 when rotateTable = FALSE}
+  \DataTypeTok{rotateTable =} \OtherTok{FALSE}\NormalTok{,}
+  \DataTypeTok{width.table =} \FloatTok{0.95}\NormalTok{, }\CommentTok{# best for given data ... 0.95 when rotateTable = FALSE}
                       \CommentTok{# 0.60 when rotateTable = TRUE}
   \DataTypeTok{myFile =}\NormalTok{ file.correlation,}
-  \DataTypeTok{myNames =} \KeywordTok{c}\NormalTok{(}\StringTok{"Diameter (in)"}\NormalTok{, }\StringTok{"Height (ft)"}\NormalTok{, }\StringTok{"Volume (ft$^3$)"}\NormalTok{) );}
+  \DataTypeTok{myNames =} \KeywordTok{c}\NormalTok{(}\StringTok{"Head to Height"}\NormalTok{,}\StringTok{"Ethnicity"}\NormalTok{, }\StringTok{"Age"}\NormalTok{, }\StringTok{"Gender"}\NormalTok{  ) );}
 
 
 \KeywordTok{Sys.sleep}\NormalTok{(}\DecValTok{2}\NormalTok{); }\CommentTok{# in case Knit-PDF doesn't like that I just created the file...}
@@ -440,7 +450,7 @@ nonlinear growth curves; Richard's curve; simulated critical points \par
 
 \newpage
 
-\input{tables/tree-correlation-table}
+\input{tables/my-correlation-table}
 
 \newpage
 

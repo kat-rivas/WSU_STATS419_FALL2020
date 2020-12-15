@@ -1,0 +1,817 @@
+---
+title: 'R Notebook: IMDB (advanced features) for Will v Denzel'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 5
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+
+library(devtools);
+
+library(humanVerseWSU);
+
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+include.me = paste0(path.github, "misc/functions-nlp.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-str.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-stack.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-pos.R");
+source_url( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-encryption.R");
+source_url( include.me );
+
+
+
+path.to.nascent = "C:/Users/Alexander Nevsky/Dropbox/WSU-419/Fall 2020/__student_access__/unit_02_confirmatory_data_analysis/nascent/";
+
+folder.nlp = "nlp/";
+path.to.nlp = paste0(path.to.nascent, folder.nlp);
+
+
+###### UPDATES TO dataframe subset function ######
+# inflation adjustments for NA ... and improvements on subsetting
+include.me = paste0(path.github, "humanVerseWSU/R/functions-dataframe.R");
+source_url( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-inflation.R");
+source_url( include.me );
+
+```
+
+# (IMDB) Custom library
+
+This is a large dataset I harvested in September.  It will allow us to explore more comprehensively the relationships of various features of the movie v cdatabase.  It is large (about 50MB), so installing may take some time if you are on a slow internet connection.
+
+This dataset will be the source you will use on your final exam to answer the question posed earlier in the semester about Will Smith and Denzel Washington.  You now have more analytics skills and with the new dataset there are more features you can extract.
+
+```{r}
+library(devtools);
+install_github("MonteShaffer/imdb/imdb"); # choose #3 to humanVerseWSU
+detach(package:imdb);
+#detach(imdb)
+library(imdb);
+packageVersion("imdb");  # ‘0.1.1’
+ 
+```         
+
+## Load data
+
+Once this is run, a lot of memory will be required to read in the 23 compressed files.
+
+```{r}
+imdb::loadDataIMDB();
+names(imdb.data);
+
+humanVerseWSU::loadInflationData();
+```
+
+Best actor:  Movies are made for profit.  To me, the best actor, according to the film industry is about money.  Without money, ratings, rankings, etc wouldn't exist, because movies wouldn't exist.  But statistically, which actor performs more consistently?  Like, maybe Will Smith makes mores money than Denzel, but his flops are equally great.  Maybe Denzel pulls in less money, but will be more consistent with the amount of money he brings in.  Plus, balancing that with budget/production costs.  Because if you make $100M on a movie that took $300M to make, you lose money vs pulling in $50M on a $5M movie to make.  Ratings, ranks, etc. are sort of subjective and ruled by popular opinion as well.  One can't argue with money, though what makes a "best" actor is probably more emotional per individual preferences than objective, so I pick money.
+
+
+Current plan of attack?
+1) gather data
+2) cleanup if necessary
+3) summary statistics
+
+```{r gather initial data }
+#trying to pull money info for will & denzel films from imdb.data 
+#i think i need to match it by ttid
+#create a dataframe for ttid and actor.  then filter imdb.data and pull just ttid?
+
+#view(imdb.data$movies.df$info)
+#combining didn't work, actors made different quantity of movies.  separate datasets?
+
+will.nmid = "nm0000226";
+will.movies = IMDB.getMoviesForPerson(will.nmid);
+will.n = nrow(will.movies);
+will.cast = merge(will.movies[,c(1,3:5)], imdb.data$movies.df$cast, by="ttid");
+
+length(unique(will.cast$nmid));
+nrow(will.cast);
+will.cast;  # this merge will create about 111 x 15
+
+will.nmid = "nm0000226";
+will.movies = IMDB.getMoviesForPerson(will.nmid);
+will.n = nrow(will.movies);
+will.ttids = will.movies$ttid;
+
+
+denzel.nmid = "nm0000243";
+denzel.movies = IMDB.getMoviesForPerson(denzel.nmid);
+denzel.n = nrow(denzel.movies);
+denzel.ttids = denzel.movies$ttid;
+
+library(dplyr)
+will.money = filter(imdb.data$movies.df$info, ttid %in% will.ttids)
+denz.money = filter(imdb.data$movies.df$info, ttid %in% denzel.ttids)
+
+
+#adjust datasets for inflation
+
+
+```
+
+I can see answering questions such as:
+summary statistics on average, total, max, min, budget/profit 
+
+then, more questions.  like: of the top movies (by profit), what genre?  (My guess is action-adventure).  what type of pairing (male or female co-stars)? was there a certain period that they were making a ton of money/popularity or is popularity consistently interspersed?  - maybe not that last. who is more popular globally by money (I bet Will)
+
+```{r creating datasets for my use}
+#what are my categories: budget, usa open, usa gross, world gross, did profit exceed budget (budget-profit)
+#ok. want to double check if numbers are adjusted for inflation before proceeding.  plus noticed alot of NAs in money data...
+
+sorted.money = NULL
+for (x in will.movies$ttid)
+{
+  for (y in 1:111)
+  {
+    if (will.money[y,1] == x)
+    {
+      sorted.money = append(sorted.money, will.money[y,9])
+    }
+  }
+}
+
+compare_will_gross = data.frame("ttid" = will.movies$ttid, "from.will.money" = sorted.money, "from.will.movies" = will.movies$millions)
+
+
+#they mostly match, but there are some inconsistencies
+#plus found alot of NAs, which I checked a few on imdb.com and it seems they are movies "in development" or he was a producer not and actor etc.  So-- I will remove NAs.  Then adjust for inflation.
+
+will.movies.cln = removeNAsFromDataFrame(will.movies, mycols=NULL)
+will.money = filter(imdb.data$movies.df$info, ttid %in% will.movies.cln$ttid)
+
+#Hm.  what do I need for money statistics.  budget, usa gross, global, opening weekend, movie ID, year, aka
+#will.money.adjusted <-- eventual dataset to get summary statistics from?
+
+#test adjustDollarForInflation function
+#test = adjustDollarForInflation(100, 1990, 2000)
+
+#added year to help with inflation adjust function
+will.money$year = NA
+for (x in 1:48)
+{
+  movie = will.movies.cln[x,1]
+  for (y in 1:48)
+  {
+    if (will.money[y,1] == movie)
+    {
+      will.money[y,20] = will.movies.cln[x,4]
+    }
+  }
+}
+
+#go through each row and change money columns?
+for (x in 1:nrow(will.money))
+{
+  #7-10 are the money columns
+  #years --> col 20
+  will.money[x, 7] = adjustDollarForInflation(as.numeric(will.money[x,7]), as.numeric(will.money[x,20]), 2000)
+  will.money[x, 8] = adjustDollarForInflation(as.numeric(will.money[x,8]), as.numeric(will.money[x,20]), 2000)
+  will.money[x, 9] = adjustDollarForInflation(as.numeric(will.money[x,9]), as.numeric(will.money[x,20]), 2000)
+  will.money[x, 10] = adjustDollarForInflation(as.numeric(will.money[x,10]), as.numeric(will.money[x,20]), 2000)
+}
+
+#will.money[1, 7] = adjustDollarForInflation(as.numeric(will.money[1,7]), as.numeric(will.money[1,20]), 2000)
+#amount = will.money[1,7] 
+#year = will.money[1,20]
+#test = adjustDollarForInflation(amount, year, 2000); test
+
+#error: error in mydollar * ratio : non-numeric argument to binary operator.
+##with some experimentation, I need to use as.numeric with the function.
+
+#ok, now add a column OR adjust global variable to subtract US gross out of it.  AND add a column "profit-budget"
+will.money$global.no_US = (as.numeric(will.money$world.gross) - as.numeric(will.money$usa.gross))
+will.money$profitInUS = (as.numeric(will.money$usa.gross) - as.numeric(will.money$budget))
+will.money$profitTotal = (as.numeric(will.money$world.gross) - as.numeric(will.money$budget))
+```
+
+## Univariate Analysis / Dataset Exploration
+
+```{r explore will}
+#dataset to explore is: will.money
+#oh right, histograms
+#ok, converting cols to numeric
+will.money$budget = as.numeric(will.money$budget)
+will.money$usa.gross = as.numeric(will.money$usa.gross)
+will.money$world.gross = as.numeric(will.money$world.gross)
+will.money$usa.opening = as.numeric(will.money$usa.opening)
+
+summary(will.money$profitInUS) #lowest movie was $60,251,885 under budget! and max was $253,711,587 
+summary(will.money$profitTotal)
+summary(denzel.money$profitTotal)
+
+summary(will.money$profitInUS)
+
+hist(will.money$budget, breaks=10)
+h = hist(will.money$profitInUS, breaks=10)
+text(h$mids, h$counts, labels=h$counts, adj=c(.5, -.5))
+h2 = hist(will.money$profitTotal, breaks=10)
+text(h$mids, h$counts, labels=h$counts, adj=c(.5, -.5))
+
+boxplot(will.money$budget, will.money$profitInUS, will.money$profitTotal)
+
+boxplot(will.money$profitInUS)
+
+plot(will.money$budget, will.money$profitTotal)
+abline(h=0)
+
+pairs(~budget+usa.opening+usa.gross+global.no_US+profitInUS+profitTotal, data=will.money, main="Simple Scatterplot Matrix" )
+
+
+#anything less than 100 is lost money
+will.money$percentReturn_US = 100*((will.money$usa.gross - will.money$budget) / will.money$budget) 
+
+will.money$percentReturn_Total = 100*((will.money$world.gross-will.money$budget) / will.money$budget)
+
+will.money$scaled_budget  = 100*will.money$budget/max(movieRank$budget, na.rm=TRUE)
+
+will.money$scaled_returnUS = 100*(will.money$percentReturn_US/max(movieRank$percentReturn_US, na.rm=TRUE))
+
+will.money$scaled_returnTotal = 100*(will.money$percentReturn_Total / max(movieRank$percentReturn_Total, na.rm=TRUE))
+
+summary(will.money$percentReturn_Total)
+
+```
+
+I find myself less interested in budget and gross columns in of itself.  more interested in profit and ratio between budget and profit.  global profit mitigates us loss as the min global profit is -$40.54M vs -$60.25M and also maximizes profit
+
+how many times did global profit save us profit butt?  percentage of films will will break even.  percentage where he profits more than 10 million?what is his most profitable movie genre? can you predict if opening weekend/budget ratio will result in profit for that movie?
+
+maybe I should just play around and see if I can answer these questions instead of trying to make a summary table right away.
+how did will's movies do by decade?
+
+__summary statistics__
+n, min, Q1, median, Q3, max
+on: budget, profitinUS, profitTotal, opening weekend?
+5 missing budget values on 48 movies -- so 5 missing profits & budgets values
+
+```{r answering questions?}
+##get negative US Profit rows, and it's equivalent global Profit
+library(tidyverse)
+lost.money = will.money %>%
+  filter(profitInUS < 0, profitTotal < 0)
+
+#17 movies did not break even with US sales out of 43 -- .3953488 aka 39.535%
+
+#8 movies did not break even Global included out of 43 -- .1860465 aka 18.61%
+#out of the 8, 3 weren't even distributed globally -- so theoretically, 5/43 or .1162791
+
+#8 movies profitInUS < 0, profitTotal < 0 out of 17 that lost $$ in US  .470588 however 3 don't count, so 5/14 = .3571428
+#9 movies profitInUS < 0, profitTotal > 0 out of 17 that lost $$ in US  .529411 
+
+
+#I had no idea the global market was sooooo needed to make money. I mean, I heard of it, but didn't actually see it in numbers?  no wonder chinese movies being made.
+#maybe diversity in films has more to do with pleasing the global market aka get more money than any big exec being politically correct
+
+
+##break even
+will.money %>%
+  filter(profitTotal >= 0)
+
+##make more than 50M
+top25.will = will.money %>%
+  filter(profitTotal >= 50000000)
+
+##25 movies -- what are their genres? I should have just added genres for all. oh well.
+will.money$genre = NA
+for (x in 1:25)
+{
+  movie = top25.will[x,1]
+  for (y in 1:48)
+  {
+    if (will.money[y,1] == movie)
+    {
+      will.money[y,24] = will.movies.cln[x,6]
+    }
+  }
+}
+
+unique(will.money$genre)
+table(will.money$genre)
+
+##lost money movies -- what are their genres?
+lost.money.genre$genre=NA
+for (x in 1:8)
+{
+  movie = top25.will[x,1]
+  for (y in 1:48)
+  {
+    if (will.money[y,1] == movie)
+    {
+      will.money[y,24] = will.movies.cln[x,6]
+      lost.money.genre[y,24] = will.movies.cln[x,6]
+    }
+  }
+}
+
+table(lost.money.genre$genre)
+```
+
+how many times did global profit save us profit butt? (Note: I used 43, b/c even tho dataset has 48 row, 5 had missing Budget)
+ANSWER: 9 times.  Or 52.94% of the time
+#17 movies did not break even with US sales out of 43 -- .3953488 aka 39.535%
+
+#8 movies did not break even Global included out of 43 -- .1860465 aka 18.61%
+#out of the 8, 3 weren't even distributed globally -- so theoretically, 5/43 or .1162791
+
+#8 movies profitInUS < 0, profitTotal < 0 out of 17 that lost $$ in US  .470588 however 3 don't count, so 5/14 = .3571428
+#9 movies profitInUS < 0, profitTotal > 0 out of 17 that lost $$ in US  .529411 
+
+percentage of films will will break even.  
+ANSWER: 35/43 = 81.3953% (nice and easy)
+
+percentage where he profits more than 50 million? (it's sort of an arbitrary number...what the heck it's easy enough to answer)
+ANSWER: 25/43 = 58.14%
+
+what is his most profitable movie genre? 
+ANSWER: maybe I do the percentage of films that made more than $50M in profit. And see what those genres are of the 25 films.
+18 categories, breaking it down by word:
+Action 17
+Adventure 11
+Animation 1
+Biography 1
+Comedy 9 (1 of which was only comedy)
+Crime 4
+Drama 7
+Family 2
+Fantasy 3
+Romance 2
+Sci Fi 4
+Thriller 1
+Many of the categories had 2-3 keywords in it.  But overall, Action and adventure appeared the most (28/62). Comedy appeared 9 times, but usually as a blend with other keywords.
+
+maybe do a "What genres are the movies that lost money in US, in Total" as a corollary? 
+ANSWER: well that wasn't useful. you can't predict how well a movie that will is in by genre, as many of it were action/adventure movies that failed.
+
+
+can you predict if opening weekend/budget ratio will result in profit for that movie? (the dataset is rather tiny. I wonder if I could answer this question with the larger dataset.  Though...this wouldn't answer "will vs denzel")
+
+maybe i can do a linear regression? maybe look at denzel now?
+
+
+```{r denzel}
+denzel.movies.cln = removeNAsFromDataFrame(denzel.movies, mycols=NULL)
+denzel.money = filter(imdb.data$movies.df$info, ttid %in% denzel.movies.cln$ttid)
+
+denzel.money$year = NA
+for (x in 1:40)
+{
+  movie = denzel.movies.cln[x,1]
+  for (y in 1:40)
+  {
+    if (denzel.money[y,1] == movie)
+    {
+      denzel.money[y,20] = denzel.movies.cln[x,4]
+    }
+  }
+}
+
+#go through each row and change money columns?
+for (x in 1:nrow(denzel.money))
+{
+  #7-10 are the money columns
+  #years --> col 20
+  denzel.money[x, 7] = adjustDollarForInflation(as.numeric(denzel.money[x,7]), as.numeric(denzel.money[x,20]), 2000)
+  denzel.money[x, 8] = adjustDollarForInflation(as.numeric(denzel.money[x,8]), as.numeric(denzel.money[x,20]), 2000)
+  denzel.money[x, 9] = adjustDollarForInflation(as.numeric(denzel.money[x,9]), as.numeric(denzel.money[x,20]), 2000)
+  denzel.money[x, 10] = adjustDollarForInflation(as.numeric(denzel.money[x,10]), as.numeric(denzel.money[x,20]), 2000)
+}
+
+#ok, now add a column OR adjust global variable to subtract US gross out of it.  AND add a column "profit-budget"
+denzel.money$global.no_US = (as.numeric(denzel.money$world.gross) - as.numeric(denzel.money$usa.gross))
+denzel.money$profitInUS = (as.numeric(denzel.money$usa.gross) - as.numeric(denzel.money$budget))
+denzel.money$profitTotal = (as.numeric(denzel.money$world.gross) - as.numeric(denzel.money$budget))
+
+#convert col to numeric
+denzel.money$budget = as.numeric(denzel.money$budget)
+denzel.money$usa.gross = as.numeric(denzel.money$usa.gross)
+denzel.money$world.gross = as.numeric(denzel.money$world.gross)
+denzel.money$usa.opening = as.numeric(denzel.money$usa.opening)
+
+summary(denzel.money$profitInUS) #lowest movie was -$35,016,329 budget! and max $85,654,751 was 
+summary(denzel.money$profitTotal) #-$35,016,329, $215,313,684
+
+summary(denzel.money$profitInUS)
+
+hist(denzel.money$budget, breaks=10)
+h = hist(denzel.money$profitInUS, breaks=10)
+text(h$mids, h$counts, labels=h$counts, adj=c(.5, -.5))
+h2 = hist(denzel.money$profitTotal, breaks=10)
+text(h$mids, h$counts, labels=h$counts, adj=c(.5, -.5))
+
+boxplot(denzel.money$budget, denzel.money$profitInUS, denzel.money$profitTotal)
+boxplot(will.money$budget, will.money$profitInUS, will.money$profitTotal)   #boxplots indicate more even spread for denzel
+
+boxplot(denzel.money$profitInUS)
+
+
+plot(denzel.money$budget, denzel.money$profitTotal)
+abline(h=0)
+
+pairs(~budget+usa.opening+usa.gross+global.no_US+profitInUS+profitTotal, data=denzel.money, main="Simple Scatterplot Matrix" )
+
+```
+
+## Answering Denzel questions now:
+
+```{r answering questions- denzel}
+lost.money = denzel.money %>%
+  filter(profitInUS < 0, profitTotal < 0)
+
+lost.money
+
+  
+#2 NAs, which brings it down to 38 movies.  
+#13 movies did not break even with US sales out of 38 -- .3421053 aka 34.21053%
+
+#6 movies did not break even Global included out of 38 -- .157895 aka 15.79%
+#out of the 6, 5 weren't even distributed globally -- so theoretically, 1/27  or .037037
+#i got 27 because 11 movies were not globally distributed 38-11
+
+##break even
+denzel.money %>%
+  filter(profitTotal >= 0)   #32/38 broke even or more .84211
+
+##make more than 50M
+top20.denzel = denzel.money %>%   #20/38 made more than 50M....ratio of budget to profit?
+  filter(profitTotal >= 50000000)
+
+##25 movies -- what are their genres? I should have just added genres for all. oh well.
+denzel.money$genre = NA
+for (x in 1:20)
+{
+  movie = top20.denzel[x,1]
+  for (y in 1:40)
+  {
+    if (denzel.money[y,1] == movie)
+    {
+      denzel.money[y,24] = denzel.movies.cln[x,6]
+    }
+  }
+}
+
+unique(denzel.money$genre)
+table(denzel.money$genre)
+
+##lost money movies -- what are their genres? no romance.  lol
+lost.money.genre$genre=NA
+for (x in 1:8)
+{
+  movie = top25.will[x,1]
+  for (y in 1:48)
+  {
+    if (will.money[y,1] == movie)
+    {
+      will.money[y,24] = will.movies.cln[x,6]
+      lost.money.genre[y,24] = will.movies.cln[x,6]
+    }
+  }
+}
+
+table(lost.money.genre$genre)
+
+#anything less than 100 is lost money
+denzel.money$percentReturn_US = 100*((denzel.money$usa.gross - denzel.money$budget) / denzel.money$budget) 
+
+denzel.money$percentReturn_Total = 100*((denzel.money$world.gross-denzel.money$budget) / denzel.money$budget)
+
+denzel.money$scaled_budget  = 100*denzel.money$budget/max(movieRank$budget, na.rm=TRUE)
+
+denzel.money$scaled_returnUS = 100*(denzel.money$percentReturn_US/max(movieRank$percentReturn_US, na.rm=TRUE))
+
+denzel.money$scaled_returnTotal = 100*(denzel.money$percentReturn_Total / max(movieRank$percentReturn_Total, na.rm=TRUE))
+
+summary(denzel.money$percentReturn_Total)
+```
+
+## Adding Percent Return Column
+ratio of budget to profit?
+
+look up percent return--
+formula is 
+return = final value-initial value/initial value
+aka 
+
+return = gross - budget/budget
+or 
+return = profit/budget
+
+
+
+```{r percent return}
+#adding percent return for will
+will.money$percent_return = will.money$profitTotal / will.money$budget
+will.money$US_percent_return = will.money$profitInUS / will.money$budget
+will.money$nonUS_percent_return = (will.money$global.no_US - will.money$budget) / will.money$budget
+
+#adding percent return for denzel
+denzel.money$percent_return = denzel.money$profitTotal / denzel.money$budget
+denzel.money$US_percent_return = denzel.money$profitInUS / denzel.money$budget
+denzel.money$nonUS_percent_return = (denzel.money$global.no_US - denzel.money$budget) / denzel.money$budget
+
+
+#histograms
+hist(will.money$percent_return, xlim=c(-2, 10), breaks=c(-2, 0, 2, 4, 6, 8, 10), ylim=c(0,30))
+hist(denzel.money$percent_return, , xlim=c(-2, 10), breaks=c(-2, 0, 2, 4, 6, 8, 10), ylim=c(0, 30))
+
+hist(will.money$US_percent_return, xlim=c(-2, 10), breaks=c(-2, 0, 2, 4, 6, 8, 10), ylim=c(0,30))
+hist(denzel.money$US_percent_return, , xlim=c(-2, 10), breaks=c(-2, 0, 2, 4, 6, 8, 10), ylim=c(0, 30))
+  
+```
+## Correlation of ProfitTotal, ProfitUS, Budget, Opening Weekend, Percent Return
+
+I think I need to strip the money datasets from all other variables to perform correlation easier
+
+```{r correlation dataset prep}
+#will
+will.cor.data = subset(will.money, select = c("budget", "usa.opening", "US_percent_return", "nonUS_percent_return" ))
+#remove NA
+will.cor.data = na.omit(will.cor.data)
+
+
+#denzel
+denzel.cor.data = subset(denzel.money, select = c("budget", "usa.opening","US_percent_return", "nonUS_percent_return" ))
+#remove NA
+denzel.cor.data = na.omit(denzel.cor.data)
+
+```
+
+```{r correlation}
+#will
+round( cor(will.cor.data), digits=2);
+plot(will.cor.data);
+    symnum( cor (will.cor.data), 
+            diag = TRUE,
+            corr = TRUE,
+            cutpoints=c(0.4,0.7,0.9), 
+            symbols = c(" ",".","*","**") 
+          ); 
+    corrplot::corrplot( (cor(will.cor.data)) ); 
+#denzel
+round( cor(denzel.cor.data), digits=2);
+plot(denzel.cor.data);
+    symnum( cor (denzel.cor.data), 
+            diag = TRUE,
+            corr = TRUE,
+            cutpoints=c(0.4,0.7,0.9), 
+            symbols = c(" ",".","*","**") 
+          ); 
+    corrplot::corrplot( (cor(denzel.cor.data)) ); 
+
+
+```
+Interesting.  For Will: Higher correlation between USA opening and ProfitTotal.  Also good is usa opening and budget.  Also good is usa opening and percent return.
+
+For Denzel: correlation between budget and US_percent Return (non existent with Will) -- but budget & percent return (which will had) is nonexistent with denzel.  Good correlation for usa opening and budget.  Good correlation with usa opening and profitTotal.
+
+-- you need to get the correlation numbers I think for the write up
+
+Note I don't count the high correlation between all the different percent returns and profits because they are kind of created from each other.  
+
+## KMEANS
+um. I don't know how to interpret the star plot.  Pass.
+
+```{r kmeans}
+# for the faint of heart ...
+will.kmeans = kmeans(will.cor.data, 4, nstart=20);  # default algorithm
+stars(will.kmeans$centers, len = 0.5, key.loc = c(4, 3),
+        main = "Algorithm: DEFAULT [Hartigan-Wong] \n Stars of KMEANS=3", draw.segments = TRUE);
+
+print(will.kmeans);
+
+    membership = as.data.frame( matrix( will.kmeans$cluster, ncol=1)) ;
+        rownames(membership) = will.cor.data$percent_return;
+
+    membership;
+
+    print( table(membership) ) ; 
+```
+
+
+```{r get 19}
+#will.nmid = "nm0000226";
+#will.ttids = will.movies$ttid;
+#top19 = as.data.frame(movieRank.allTime %>% filter(id %in% will.ttids))
+
+actorRank.allTime = readRDS("STAT419_actorRank2000.rds");
+movieRank.allTime = readRDS("STAT419_movieRank2000.rds");
+#movieRank.2000 = readRDS("STAT419_movieRank2000.rds")
+#actorRank.2000 = readRDS("STAT419_actorRank2000.rds")
+
+
+top19denzel = intersect(denzel.ttids, imdb.data$movies$popular50$ttid)
+top19will = intersect(will.ttids, imdb.data$movies$popular50$ttid)
+
+topDenzel = movieRank.allTime[movieRank.allTime$ttid %in% top19denzel,]
+topWill = movieRank.allTime[movieRank.allTime$ttid %in% top19will,]
+topDenzel$actor = "denzel"
+topWill$actor = "will"
+
+topDenzel = subset(topDenzel, select = c(actor, ttid:runtime))
+topWill = subset(topWill, select = c(actor, ttid:runtime))
+
+topBoth = rbind(topDenzel, topWill)
+
+#actorRank
+actorRank.allTime[actorRank.allTime$nmid %in% denzel.nmid, ]  #actorRank score: 35.99
+actorRank.allTime[actorRank.allTime$nmid %in% will.nmid, ]    #actorRank score: 32.01
+
+#adjust for inflation
+for (x in 1:nrow(topBoth))
+{
+  #19-22 are the money columns
+  #years --> col 4
+  topBoth[x, 19] = adjustDollarForInflation(as.numeric(topBoth[x,19]), as.numeric(topBoth[x,4]), 2000)
+  topBoth[x, 20] = adjustDollarForInflation(as.numeric(topBoth[x,20]), as.numeric(topBoth[x,4]), 2000)
+  topBoth[x, 21] = adjustDollarForInflation(as.numeric(topBoth[x,21]), as.numeric(topBoth[x,4]), 2000)
+  topBoth[x, 22] = adjustDollarForInflation(as.numeric(topBoth[x,22]), as.numeric(topBoth[x,4]), 2000)
+}
+
+
+
+#adding %return_nonUS and %return_US to toplists
+topBoth$percentReturn_nonUS = 100*((as.numeric(topBoth$world.gross) - as.numeric(topBoth$usa.gross)) - as.numeric(topBoth$budget)) / as.numeric(topBoth$budget)
+
+topBoth$percentReturn_US = 100*(as.numeric(topBoth$usa.gross) - as.numeric(topBoth$budget)) / as.numeric(topBoth$budget)
+
+topBoth$percentReturn_Total = 100*((as.numeric(topBoth$world.gross))-as.numeric(topBoth$budget)) / as.numeric(topBoth$budget)
+
+#creating values to create scaled columns using large 2000 movie dataset max values
+maxMovieBudget = max(movieRank$budget, na.rm=TRUE)
+maxPercentReturn.US = max(movieRank$percentReturn_US, na.rm=TRUE)
+maxPercentReturn.Total = max(movieRank$percentReturn_Total, na.rm=TRUE)
+
+topBoth$scaled_budget  = 100*(as.numeric(topBoth$budget)/maxMovieBudget)
+
+topBoth$scaled_returnUS = 100*(as.numeric(topBoth$percentReturn_US)/ maxPercentReturn.US)
+
+topBoth$scaled_returnTotal = 100*(as.numeric(topBoth$percentReturn_Total) / maxPercentReturn.Total)
+```
+
+#########################################################
+#########################################################
+
+```{r my movierank database to make a pond?}
+#read rds
+actorRank.allTime = readRDS("STAT419_actorRank2000.rds");
+movieRank.allTime = readRDS("STAT419_movieRank2000.rds");
+
+#adding budget columns to movies2000.rds file and making a MAX valaue of the column for "scale"?
+movieRank = as.data.frame(movieRank.allTime)
+
+#as.numeric
+movieRank$budget = as.numeric(movieRank$budget)
+movieRank$usa.gross = as.numeric(movieRank$usa.gross)
+movieRank$usa.opening = as.numeric(movieRank$usa.opening)
+movieRank$world.gross = as.numeric(movieRank$world.gross)
+
+#remove ALL NAs from budget, world gross -- just focus on that for now.
+sum(is.na(movieRank$budget)) #215
+sum(is.na(movieRank$world.gross)) #60
+movieRank = movieRank[!is.na(movieRank$budget), ]
+
+sum(is.na(movieRank$budget)) # now 0
+sum(is.na(movieRank$world.gross)) #still 30
+
+movieRank=movieRank[!is.na(movieRank$world.gross), ]
+sum(is.na(movieRank$world.gross)) # now 0
+
+#adjust for inflation
+for (x in 1:nrow(movieRank))
+{
+  #19-22 are the money columns
+  #years --> col 4
+  movieRank[x, 18] = adjustDollarForInflation(as.numeric(movieRank[x,18]), as.numeric(movieRank[x,3]), 2000)
+  movieRank[x, 19] = adjustDollarForInflation(as.numeric(movieRank[x,19]), as.numeric(movieRank[x,3]), 2000)
+  movieRank[x, 20] = adjustDollarForInflation(as.numeric(movieRank[x,20]), as.numeric(movieRank[x,3]), 2000)
+  movieRank[x, 21] = adjustDollarForInflation(as.numeric(movieRank[x,21]), as.numeric(movieRank[x,3]), 2000)
+}
+
+#anything less than 100 is lost money
+movieRank$percentReturn_US = 100*((movieRank$usa.gross - movieRank$budget) / movieRank$budget) 
+
+movieRank$percentReturn_Total = 100*((movieRank$world.gross-movieRank$budget) / movieRank$budget)
+
+movieRank$scaled_budget  = 100*movieRank$budget/max(movieRank$budget, na.rm=TRUE)
+
+movieRank$scaled_returnUS = 100*(movieRank$percentReturn_US/max(movieRank$percentReturn_US, na.rm=TRUE))
+
+movieRank$scaled_returnTotal = 100*(movieRank$percentReturn_Total / max(movieRank$percentReturn_Total, na.rm=TRUE))
+
+```
+
+```{r Will and Denzel dataframes}
+mycols = c("actor", "movieRank", "year", "title", "scaled_budget", "scaled_returnTotal", "metacritic", "budget", "percentReturn_US", "percentReturn_Total"  )
+
+
+topWill = movieRank[movieRank$ttid %in% will.ttids, ]
+#remove Austin Powers data cuz he wasn't in it
+topWill = topWill[topWill$title != "Austin Powers: The Spy Who Shagged Me", ]
+
+topDenzel = movieRank[movieRank$ttid %in% denzel.ttids, ]
+topDenzel = topDenzel[topDenzel$title != "Fallen", ]
+
+#topBoth.subset = topBoth[mycols]
+#Fallen has no budget info.  Austin Powers does NOT have Will in it, Parent Trap has no budget either. And Ma Rainey's Black Bottom.
+will.movie.list = c("Independence Day (1996)", "Enemy of the State (1998)", "Men in Black (1997)", "Men In Black II (2002)", "Men in Black 3 (2012)", "Bad Boys II (2003)", "Wild Wild West (1999)", "I, Robot (2004)", "Hancock (2008)", "suicide Squad (2016)", "Hitch (2005)", "The Pursuit of Happyness (2006)", "Focus (2015)", "Bad Boys (1995)", "I Am Legend (2007) ", "Aladdin (2019)", "The Karate Kid (2010)" )
+
+summary.will = data.frame("Movie" = will.movie.list, "Movie Rank" = topWill$movieRank, "Scaled ROI" = topWill$scaled_returnTotal)
+
+summary.will$Actor = "Will"
+summary.will = summary.will[ , c(4, 1, 2, 3)]
+
+
+library(formattable)
+
+format_table(summary.will, formatters=list(
+  movieRank = color_tile("white", "orange"),
+  Scaled_ROI = 
+))
+
+
+```
+
+ARGH Why doesn't %in% work!!
+
+Notes from IMDB notebooks:
+A modern film wants to "break-even" in the U.S. (spend $300 on budget, make that at the U.S. box office) and then make a billion dollars on the international market.  MCU moviez, StarWarz, Transformerz, and so on.
+
+### Fish in a barrel
+
+When we examine Will vs. Denzel side-by-side as trees, we may be missing their context in the forest.  Are they two fish in a barrel, or two fish in a larger pond.  YES, I am mixing metaphors which is bad linguistics, but I am a data analyst, so I believe I can get away with it.
+
+As you prepare your final analysis, you should put these actors in context of a bigger world.  I will show two larger frameworks.  Maybe compute and rank values in these larger frameworks, or compute Z-scores within the bigger pond, and review the relative performances of Will vs. Denzel in that context.
+
+-----------------------------------------
+
+** top ranking MovieRank movie for Denzel is MaRainey's Black Bottom???!!! That doesnt' make sense to me!  It hasn't even come out (other than some reviews -- as I've heard of this movie due to Chadwick actor)  So...I think I will remove it and just use 18...?
+
+
+Ok...I have NO IDEA why austin powers is listed as a will smith movie.  he's not even a producer as far as I can tell.  I think IMDB made a mistake.  There IS a "William Smith" somewhere in teh credits.  But no "Will smith" in full cast -- I read them all.  
+
+Removed parent trap b/c it didn't have budget info?
+
+2 tail t test to see which is higher == will or denzel
+
+156 budget values are in foreign currency.  I can't quickly convert them because even if I converted them to USD, which I could, I would then have to adjust for inflation, which is a little more time-consuming. Going to remove.
+
+
+```{r look at will and denzel again}
+#a billion boxplots?
+#compare budget and ROI
+
+#OK I can compare top 17 movies between will and denzel
+boxplot(topBoth$scaled_returnTotal~topBoth$actor, col="light blue", ylab="scaled ROI", xlab = "actor")
+
+boxplot(topBoth$scaled_budget~topBoth$actor, col="light blue", ylab = "scaled budget", xlab="actor")
+
+boxplot(as.numeric(topBoth$budget)~topBoth$actor, ylab = "budget")
+boxplot(as.numeric(topBoth$percentReturn_Total)~topBoth$actor, ylab="percent return")
+
+boxplot(as.numeric(topBoth$budget), as.numeric(topBoth$percentReturn_Total))
+
+boxplot(as.numeric(topBoth$percentReturn_Total), topBoth$scaled_returnTotal)
+
+boxplot(movieRank$scaled_returnTotal, topBoth$scaled_returnTotal)
+
+#remove the top 2 movies (Paranormal Activity and Blair Witch Project) b/c they are extreme outliers
+movieRank.noOutliers = movieRank[movieRank$title != "Paranormal Activity", ]
+movieRank.noOutliers = movieRank.noOutliers[movieRank$title != "The Blair Witch Project", ]     
+
+#prep a dataset for final boxplot
+library(ggplot2)
+boxplot.df = data.frame("ROI rank" = movieRank.noOutliers$scaled_returnTotal)
+boxplot.df$actor = "Pond"
+boxplot.df2 = data.frame("ROI rank" = topWill$scaled_returnTotal, "actor" = "Will")
+boxplot.df = rbind(boxplot.df, boxplot.df2)
+
+boxplot.denzel = data.frame("ROI rank" = topDenzel$scaled_returnTotal, "actor" = "Denzel")
+boxplot.df = rbind(boxplot.df, boxplot.denzel)
+
+boxplot(movieRank.noOutliers$scaled_returnTotal, topDenzel$scaled_returnTotal, topWill$scaled_returnTotal, 
+        main="Comparing ROI ranking for Will and Denzel", ylab = "ROI rank")
+
+
+ggplot(boxplot.df, aes(x=actor, y=ROI.rank)) + geom_boxplot(fill = "#4271AE", alpha = .7) +
+  ggtitle("Comparing ROI rank of Will and Denzel to the Pond") + theme_bw() +
+  scale_y_continuous(name="ROI rank") + scale_x_discrete(name =" ")
+
+```
+I chose not to compare budget and ROI values because the Percent Return value is derived in part by budget and is a proportion.  I think budget to profit comparison would be more accurate, or comparing the Percent Return with the scaled Percent Return.  
+
+References:
+
+https://www.google.com/search?client=firefox-b-1-d&q=percent+return
+
+https://stats.stackexchange.com/questions/205566/combining-multiple-variables-into-one-score

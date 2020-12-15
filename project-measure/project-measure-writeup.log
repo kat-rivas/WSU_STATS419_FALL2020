@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.4)  6 NOV 2020 12:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.11) (preloaded format=pdflatex 2020.11.4)  8 NOV 2020 14:52
 entering extended mode
 **./project-measure-writeup.tex
 (project-measure-writeup.tex
@@ -956,20 +956,12 @@ Package natbib Warning: Citation `Tukey:1962' on page 3 undefined on input line
 Package natbib Warning: Citation `Tukey:1962' on page 3 undefined on input line
  523.
 
-[3 <./figures/conceptual-model-v4.pdf>] [4] (tables/example-correlation-table.t
-ex
-Underfull \hbox (badness 10000) in alignment at lines 26--26
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[3 <./figures/conceptual-model-v4.pdf>] [4] (tables/my-correlation-table.tex
+Underfull \hbox (badness 10000) in alignment at lines 28--28
+[][][][][][][][][][][][][][][][][][][]
  []
 
-
-Underfull \hbox (badness 10000) in alignment at lines 36--36
-[][] 
- []
-
-) [5] [6
-
-]
+) [5] [6]
 <pdfs/project_01_handout.pdf, id=71, 614.295pt x 794.97pt>
 File: pdfs/project_01_handout.pdf Graphic file (type pdf)
 <use pdfs/project_01_handout.pdf>
@@ -1002,7 +994,7 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 605.
 
-LaTeX Warning: Reference `' on page 9 undefined on input line 641.
+LaTeX Warning: Reference `' on page 9 undefined on input line 633.
 
 [9] (project-measure-writeup.ent
 
@@ -1024,13 +1016,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 15410 strings out of 479799
- 236984 string characters out of 2865885
- 571093 words of memory out of 3000000
- 32096 multiletter control sequences out of 15000+200000
+ 15409 strings out of 479799
+ 236959 string characters out of 2865885
+ 556087 words of memory out of 3000000
+ 32095 multiletter control sequences out of 15000+200000
  625283 words of font info for 81 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 79i,14n,84p,1283b,555s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 79i,13n,84p,1283b,555s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-r
 m.enc}{C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/
 lm-ec.enc}{C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/fonts/enc/dvips
@@ -1062,7 +1054,7 @@ ic/lm/lmtk10.pfb><C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/fonts/ty
 pe1/public/lm/lmtt10.pfb><C:/Users/Dorbs of Doom/AppData/Local/Programs/MiKTeX/
 fonts/type1/public/lm/lmtti10.pfb><C:/Users/Dorbs of Doom/AppData/Local/Program
 s/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb>
-Output written on project-measure-writeup.pdf (12 pages, 1013475 bytes).
+Output written on project-measure-writeup.pdf (12 pages, 1005277 bytes).
 PDF statistics:
  292 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

@@ -108,7 +108,7 @@
 \author{\Large Kathleen Rivas\vspace{0.05in} \newline\normalsize\emph{Washington State University}  }
   
   
-  \date{November 06, 2020}
+  \date{November 08, 2020}
 \setcounter{secnumdepth}{3}
 
 \usepackage{titlesec}
@@ -378,7 +378,7 @@ You can include references such as this one to the Appendices section
     
     \hbox{\vrule height .2pt width 39.14pc}
     \vskip 5pt 
-    \hfill \textbf{\textcolor{WSU.gray}{ November 06, 2020 } }
+    \hfill \textbf{\textcolor{WSU.gray}{ November 08, 2020 } }
     \vskip 5pt 
     
 \end{abstract}
@@ -532,7 +532,7 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
 
 \newpage
 
-\input{tables/example-correlation-table}
+\input{tables/my-correlation-table}
 
 \newpage
 
@@ -603,6 +603,7 @@ referenced in this document.
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(devtools);       }\CommentTok{# required for source_url}
+\KeywordTok{library}\NormalTok{(dplyr)}
 
 \NormalTok{path.humanVerseWSU =}\StringTok{ "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"}
 \KeywordTok{source_url}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.humanVerseWSU,}\StringTok{"master/misc/functions-project-measure.R"}\NormalTok{) );}
@@ -619,21 +620,12 @@ Below is the code to load the data and prepare it for analysis.
 \begin{Highlighting}[]
 \NormalTok{path.project =}\StringTok{ "C:/_git_/WSU_STATS419_FALL2020/project-measure/"}\NormalTok{;}
 
-\NormalTok{path.to.secret =}\StringTok{ "C:/Users/Dorbs of Doom/Documents/WSU/Fall 2020/STAT 419 Intro to Multivariate/"}\NormalTok{;}
-
-\CommentTok{#measure = utils::readRDS( paste0(path.to.secret, "final.measure.rds"), header=TRUE, quote="", sep="|");}
-
 \NormalTok{path.github =}\StringTok{ "https://raw.githubusercontent.com/kat-rivas/WSU_STATS419_FALL2020/"}\NormalTok{;}
-\CommentTok{#source_url( paste0(path.github,"master/functions/functions-project-measure.R") );}
-
-\CommentTok{# this is your function}
-\CommentTok{# put in the same "units"}
-\CommentTok{# merge left/right}
-\CommentTok{# build proportion data}
-\CommentTok{# and so on ... }
-\CommentTok{# measure.df = prepareMeasureData(measure);}
+\KeywordTok{source_url}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.github,}\StringTok{"master/functions/functions-project-measure.R"}\NormalTok{) );}
 
 \NormalTok{measure =}\StringTok{ }\KeywordTok{readRDS}\NormalTok{(}\StringTok{"C:/Users/Dorbs of Doom/Documents/WSU/Fall 2020/STAT 419 Intro to Multivariate/final.measure.rds"}\NormalTok{)}
+
+\NormalTok{measure.df =}\StringTok{ }\KeywordTok{prepareMeasureData}\NormalTok{(measure)}
 \end{Highlighting}
 \end{Shaded}
 

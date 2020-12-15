@@ -1,0 +1,416 @@
+---
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    toc: true
+    toc_depth: 3 
+    number_sections: true
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ./../latex-templates/report.tex
+  html_document:
+    df_print: paged
+    
+title: "The 8 Stacked Heads Test"
+subtitle: "STAT 419: Project Measure"
+author: 
+- name: "Kathleen Rivas"
+  affiliation: "Washington State University"
+keywords: |
+    summary statistics; correlation; korean beauty standards
+abstract: |
+  In this article I compare the head to height proportion from a dataset gathered by students in a large public university statistics class.  I look at correlation of head to height proportion and gender, and head to height and ethnicity.  
+  
+sectionnumberdepth: 3
+titleEndnotes: "ENDNOTES"
+titleReferences: "REFERENCES"
+columnsReferences: 2
+titleTOC:  "TABLE OF CONTENTS"
+bibliography: ./../biblio/master.bib
+bibliostyle: ./../biblio/ormsv080.bst
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\section{Introduction}
+\label{sec:intro}
+
+The saying goes, "Beauty is in the eye of the beholder."  However, in Korean culture, this is a very specific image, for both genders.  Korea is considered the "world's plastic surgery capital." \citep{Jacobs:2018} One of the more unusual beauty standard in Korea is to have a "small head." It is called the "8 Stacked heads" test.  If the height is the length of 8 "heads" (the length of your head from the top of the head to the bottom of the chin), then you are considered attractive.  This standard applies to all genders. \citep{Koreaboo:2017} 
+
+[ONE GRAPHIC -- I am breaking report form to state that I did not have time to make a graphic.  But if I did, I would construct it similar to the weather graphic you created.  The bottom row would have the range of head to height proportions, and across the graphic would be the data points.  Different color/shape to denote gender.  Different colors below it to denote ethnicity points.]
+
+
+\section{Research Question:  How realistic is the "8 Stacked Heads" test?}
+\label{sec:rq}
+
+Beauty standards are often unrealistic, but I was curious to see how realistic this particular beauty standard was.  I have heard about Koreans preference for "small heads", and anecdotally, have come across several Caucasian male and Asian female partners where the taller Caucasian male would often have head circumference sizes smaller than their Asian female partners.  These personal experiences have caused me to wonder if Asians have larger heads in proportion to their height, in general, causing this peculiar beauty standard of having a "small head."  Getting a sample size greater than I could collect on my own gives me the opportunity to explore this beauty standard in greater detail than a handful of anecdotal experiences.
+
+\subsection{Is there a correlation between the likelihood of meeting this beauty standard and ethnicity or gender?}
+\label{sec:rq2}
+
+The overall question is rather simple, and can be found by getting the mean of the stacked heads ratio. What is more interesting is to see if there is any correlation between ethnicity, gender, and the stacked heads ratio. 
+
+\section{Data Description}
+\label{sec:data}
+
+Method
+
+Participants and procedure: Students enrolled in data analytics statistics class at a large state university participated as well as gathered different bodily measurements.  The sample(N=428, 72.2% Caucasian), with a median age of 34.4.  Measures were gathered from a variety of methods, from online, to the student personally gathering measurements on a participant.  The participants were connected by personal network of students in the statistics class. 
+  
+Measures: Items gathered were of different body measurements.  Most of them were gathered horizontally or vertically, but head circumference was also gathered.  Covariates such as eye color and dominant hand for writing and swinging were included.  The full measures are shown in the Appendix. 
+
+To gather evidence for the correlation and summary statistics for the Korean head to height beauty ideal of 7 to 8 "heads" from the neck down, measurements of  height and the length of head from top of the head to below the chin. Other measures gathered for this study was ethnicity, gender, and age.
+
+After data cleansing, the sample used for analysis reduced to N=231.  The quality was determined on the scale of 1-10.  
+
+\subsection{Summary of Sample}
+\label{sec:data-sample}
+
+The sample (N=231) covariates consisted of 118 males, 112 females, 1 other. The age ranged from 3 to 94 years.  
+\vspace{5mm}
+\begin{tabular}{ c c c c c}
+  Caucasian & Asian & Hispanic & African-American & Other \\
+  \hline
+  167 & 39 & 7 & 8 & 10
+\end{tabular}
+\vspace{5mm}
+
+
+\begin{tabular}{ c c c c c}
+   Caucasian & Asian & Hispanic & African-American & Other \\
+  \hline
+  72.2\% & 16.9\% & 3\% & 3.5\% & 4.3\%
+\end{tabular}
+
+\subsection{Summary Statistics of Data}
+\label{sec:data-summary}
+  
+According to the correlation table, there is no strong correlation between "passing" the "8 Stacked Heads" test and any factor (such as ethnicity or gender).  There is a weak correlation between ethnicity and head to height proportion (p = -.16).  Here is the breakdown of those that "passed" the test:
+\vspace{5mm}
+\begin{tabular} {c c}
+  Male & Female \\ 
+  \hline
+  34.745\% & 34.821\%
+\end{tabular}
+\vspace{5mm}
+
+
+\begin{tabular} { c c c c c}
+  Caucasian & Asian & Hispanic & African-American & Other \\
+  \hline
+  38\% & 18\% & 14\% & 62.5\% & 30\%
+\end {tabular}
+
+
+\section{Key Findings}
+\label{sec:findings}
+
+80 out of 231 participants met the "8 Stacked Heads" beauty standard (34.632\%).  As expected, this is not a common measurement people "attain". The largest ethnicity group was Caucasian, and the population that "passed" the test roughly matches the proportion of all ethnicities that passed the test -- Caucasian 38\% and total 34.632\%.  The second largest group is Asian, with 39 participants in this category -- not a large dataset to work with, but interestingly, only 18\% passed this test, significantly lower than 34.632\%.  Also interesting, is the percentage of African-American which is significantly higher at 62.5\% vs 34.632\%.  "Other" comprises of Indian, Native Americans, and mixed heritage, and fall in at 30\% -- close to the total.  The Hispanic group is also low, lower than Asian at 14\%, but I looked at the dataset manually (because it was so small at only 8 participants), and some of the proportions seem unusually small as to make me question the quality of the data.  For example, a 26 year old Asian with a ratio of 4.4667 heads.  I mean...it's possible...but I question it?
+
+I have noticed (but not been able to statistically derive) that age can play a factor -- children's head to height proportions seem to be lower (i.e. children's heads are larger in proportion to their bodies) on average.  
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Overall, the dataset proves to me that Asians have a lower "chance" of "passing" the "8 Stacked Heads" test which might be why, as a society, they have having a "small head" as determined by the "8 Stacked Heads" test.  Not that I've talked to an exhaustive amount of non-Asians, but again, anecdotally, non-Asians do not share this Korean beauty standard and mystified and confused as to how this could be considered a beauty standard.  If the average, as well as Caucasians pass this "test" at 34.632 - 38\%, and Asians pass at 18\%, this would be a soft "proof" my suspicions that Asians have "big" heads, in general, therefore they view "small" heads as rare, and therefore more beautiful.  
+
+
+\newpage
+
+\begin{figure}[!ht]
+%% figures have hrule, tables have hline
+	\hrule
+	\caption{ \textbf{Korean-Talk-Show-Where-Celebrities-Get-Tested} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=\textwidth]{figures/Koreaboo.jpg} }
+	\end{center}
+	\label{fig:Koreaboo-Image}
+	\hrule
+\end{figure}
+
+\newpage
+
+\input{tables/my-correlation-table} 
+
+\newpage
+
+\section{APPENDICES}
+\label{sec:appendix}
+
+
+\subsection{Data Provenance}
+\label{sec:appendix-data-provenance}
+
+Data Provenance was implemented with the usage of Github for version control, and the original dataset was not modified.  Analysis was done on separate, reproducible copies.  Data collection was less rigorous, as I did not have direct control over all measurements gathering, but data cleansing was done to remove NAs, duplicates, and data that did not look genuine. 
+
+The data was collected by a WSU statistics class, and was tasked to find measure a total of 10 people for the various following measurements and covariates:\vspace{5mm}
+
+Height: standing height, preferably with no shoes on
+
+Head Height: height from the top of the head to below the chin
+
+Head Circumference: distance around head, measured right above ears or eyes
+
+Hand Length: length of hand from middle finger to wrist
+
+Hand Width: width of hand from pinkie finger to thumb fully stretched
+
+Hand to Elbow: length from middle finger to elbow
+
+Elbow to Armpit: length from elbow to armpit
+
+Arm Reach: standing flat footed, length from floor to the extended arm maximum point
+
+Arm Span: length from each middle finger, fully extended
+
+Foot Length: length of foot from largest toe to back of heel
+
+Floor to Kneepit: distance from floor to the kneepit
+
+Floor to Hip: distance from the floor to the hip (top of the pantline)
+
+Floor to Navel: distance from the floor to the navel, orthogonal measurement
+
+Floor to Armpit: distance from floor to the armpit
+\vspace{5mm}
+
+Covariates:
+
+Measurement unit: centimeters, inches
+
+Dominant writing hand: left, right, both
+
+Eye Color: brown, green, blue, hazel
+
+Dominant swinging arm/hand: left, right, both
+
+Age
+
+Gender: male, female, other
+
+Quality of measurements: 1-10
+
+Minutes: length of minutes
+
+Ethnicity
+
+Miscellaneous notes on the subject and the data collection
+\vspace{5mm}
+
+Part of responsible data collection is the need for the data to be both quality and anonymous to protect the subjects. Data privacy was a huge component discussed in my Data Ethics class -- and for this project, students were asked to anonymize names to protect privacy. This project also does not make the original dataset publicly available as well to protect identities. 
+
+
+\newpage
+\subsubsection{Data Collection Handout}
+\label{sec:appendix-data-handout}
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Handout} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/project_01_handout.pdf} }
+	\end{center}
+	\label{fig:handout-1}
+	\hrule
+\end{figure}
+
+
+\newpage
+
+
+\subsection{Personal Opinion}
+\label{sec:appendix-personl-opinion}
+
+  I feel that some Asian beauty standards are an attempt to look more "Westernized", however, most are not.  Most are traditionally rooted in their ideas of beauty for centuries -- such as their obsession with white skin, small head, and thinness.  Non-Asian females are pressured to be thin to be beautiful, but not to the degree Asian females are.  On the other hand, breast nor butt size matters not in Asian culture for the most part, comparatively to Western culture.  
+\vspace{5mm}
+It is too bad that I have not had more time (not implying you should have extended this deadline further, it's more an implication of my personal lack of time between other classes and personal life) or a larger dataset to work with.  Also, I should have thought about the type of measurements gathered first before I settled on a research question.  I wanted to flesh out the project with several beauty standards, namely revolving around waist to hip (WTR) or waist to shoulder (for male standard), but when I finally got to analysis, I realized that I didn't have waist measurements.  That's a lesson for me -- to look at the dataset to see if I am able to answer my question with it or does the dataset not support the query.
+
+\newpage
+
+\subsection{Preparing the Report Workspace as a subsection}
+\label{sec:appendix-setup}
+
+\subsubsection{Preparing the Report Workspace as a subsubsection}
+\label{sec:appendix-setup2}
+
+\paragraph{Preparing the Report Workspace as a paragraph}
+\label{sec:appendix-setup3}
+
+\subparagraph{Preparing the Report Workspace as a subparagrah}
+\label{sec:appendix-setup4}
+
+Below is the necessary functions and libraries required to run the code referenced in this document.
+
+```{r,appendix-setup,message=FALSE}
+library(devtools);       # required for source_url
+library(dplyr)
+
+path.humanVerseWSU = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"
+source_url( paste0(path.humanVerseWSU,"master/misc/functions-project-measure.R") );
+
+```
+
+Below is the code to load the data and prepare it for analysis.
+
+```{r,appendix-secret,message=FALSE}
+
+path.project = "C:/_git_/WSU_STATS419_FALL2020/project-measure/";
+
+path.github = "https://raw.githubusercontent.com/kat-rivas/WSU_STATS419_FALL2020/";
+source_url( paste0(path.github,"master/functions/functions-project-measure.R") );
+
+measure = readRDS("C:/Users/Dorbs of Doom/Documents/WSU/Fall 2020/STAT 419 Intro to Multivariate/final.measure.rds")
+
+measure.df = prepareMeasureData(measure)
+
+```
+
+
+Below is the code to generate the summary statistics and save them as a table that you see in Section \ref{}.
+
+```{r,appendix-setup-summary-correlation,message=FALSE}
+library(devtools);       # required for source_url
+library(dplyr)
+
+path.humanVerseWSU = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"
+source_url( paste0(path.humanVerseWSU,"master/misc/functions-project-measure.R") );
+
+path.project = "C:/Users/Dorbs of Doom/_git_/WSU_STATS419_FALL2020/project-measure/";
+path.tables = paste0(path.project,"tables/");
+  createDirRecursive(path.tables);
+```
+
+```{r,appendix-correlation,message=FALSE}
+file.correlation = paste0(path.tables,"my-correlation-table.tex");
+
+measure.df = prepareMeasureData(measure)
+
+measure.df2 = select(measure.df, head.to.height, ethnicity.groups, age, my.gender)
+myData = as.matrix(measure.df2);  # numeric values only, only what will appear in table
+
+buildLatexCorrelationTable(myData, 
+  rotateTable = FALSE,
+  width.table = 0.95, # best for given data ... 0.95 when rotateTable = FALSE
+                      # 0.60 when rotateTable = TRUE
+  myFile = file.correlation,
+  myNames = c("Head to Height","Ethnicity", "Age", "Gender" ) );
+
+
+Sys.sleep(2); # in case Knit-PDF doesn't like that I just created the file...
+
+```
+
+```{r, appendix-summary, message=FALSE}
+total = nrow(measure.df); total
+ethnicity.freq = table(measure.df2$ethnicity.groups)
+gender.freq = table(measure.df2$my.gender)
+mean(measure.df2$head.to.height)
+
+#to find out how many meet the 8 stacked head
+pass = 0
+rownames(measure.df2) <- seq(length=231)
+  
+for (i in 1:nrow(measure.df2))
+{
+  if (measure.df2$head.to.height[i] >= 7)
+  {
+    pass = pass + 1
+  }
+  else
+  {
+    next
+  }
+}
+pass
+
+#to find out gender and head to height
+male = 0
+female = 0
+for (i in 1:231)
+{
+  if (measure.df2[i,1] >= 7)
+  {
+    if (measure.df2[i,4] == "2")
+    {
+      male = male + 1
+    }
+    else
+    {
+      female = female + 1
+    }
+  }
+  else
+  {
+    next
+  }
+}
+female/112; male/118
+
+#ethnicities that "passed" the test
+white = 0; asian = 0; hispanic = 0; black = 0; other = 0
+
+for (i in 1:231)
+{
+  if (measure.df2[i,1] >= 7)
+  {
+    if (measure.df2[i,2] == "1")
+    {
+      white = white + 1
+    }
+    if (measure.df2[i,2] == "2")
+    {
+      asian = asian + 1
+    }
+    if (measure.df2[i,2] == "3") 
+    {
+      hispanic = hispanic + 1
+    }
+    if (measure.df2[i,2] == "4")
+    {
+      black = black + 1
+    }
+    if (measure.df2[i,2] == "5") 
+    {
+      other = other + 1
+    }
+  }
+}
+
+white;asian;hispanic;black;other
+
+#total ethnicities
+total.white = 0; total.asian = 0; total.hispanic = 0; total.black = 0; total.other = 0
+for (i in 1:231)
+{
+  if (measure.df2[i,2] == "1")
+  {
+    total.white = total.white + 1
+  }
+  if (measure.df2[i,2] == "2")
+  {
+    total.asian = total.asian + 1
+  }
+  if (measure.df2[i,2] == "3")
+  {
+    total.hispanic = total.hispanic + 1
+  }
+  if (measure.df2[i,2] == "4")
+  {
+    total.black = total.black + 1
+  }
+  if (measure.df2[i,2] == "5")
+  {
+    total.other = total.other + 1
+  }
+}
+total.white;total.asian;total.hispanic;total.black;total.other
+```
+
+
+
+
+
